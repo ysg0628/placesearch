@@ -1,37 +1,27 @@
 package com.chainbell.placesearch.common.util;
 
-import com.chainbell.placesearch.place.dto.service.http.HttpGetQueryVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.net.http.HttpHeaders;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.Map;
 
 @Service
 public class HttpUtil {
 
-    public static String getRequest(String targetUrl, String queryParam, String authorization) {
+    public static String getRequest(String targetUrl, String queryParam, String authorization, Map<String, String> header) {
 
         String response = "";
 
         try {
-            if (queryParam == null || authorization == null) {
-                return null;
+            if(queryParam != null) {
+                targetUrl = targetUrl + "?" + queryParam;
             }
-
-            targetUrl = targetUrl + "?" + queryParam;
-
             URL url = new URL(targetUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET"); // 전송 방식
@@ -39,6 +29,12 @@ public class HttpUtil {
 
             if (authorization != null && authorization.length() > 0) {
                 conn.setRequestProperty("Authorization", authorization);
+            }
+
+            if(header != null){
+                for (String key : header.keySet()) {
+                    conn.setRequestProperty(key, header.get(key));
+                }
             }
 
             conn.setConnectTimeout(5000); // 연결 타임아웃 설정(5초)

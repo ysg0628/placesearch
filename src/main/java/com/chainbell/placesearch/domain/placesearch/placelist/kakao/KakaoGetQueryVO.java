@@ -1,4 +1,4 @@
-package com.chainbell.placesearch.place.dto.service.http;
+package com.chainbell.placesearch.domain.placesearch.placelist.kakao;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 @Getter
 @ToString
 @Builder
-public class HttpGetQueryVO {
+public class KakaoGetQueryVO {
 
     @NonNull
     private String query;
