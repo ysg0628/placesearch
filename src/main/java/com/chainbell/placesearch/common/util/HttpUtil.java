@@ -1,5 +1,6 @@
 package com.chainbell.placesearch.common.util;
 
+import com.chainbell.placesearch.place.dto.service.http.HttpGetQueryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,16 +21,16 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class HttpUtil {
 
-    public static String getKakaoRequest(String targetUrl, String keyword, String authorization) {
+    public static String getRequest(String targetUrl, String queryParam, String authorization) {
 
         String response = "";
 
         try {
-            if (keyword == null || authorization == null) {
+            if (queryParam == null || authorization == null) {
                 return null;
             }
-            String encodedKeyword = URLEncoder.encode(keyword, "UTF-8");
-            targetUrl = targetUrl + "?query=" + encodedKeyword;
+
+            targetUrl = targetUrl + "?" + queryParam;
 
             URL url = new URL(targetUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
