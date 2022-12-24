@@ -1,27 +1,40 @@
 package com.chainbell.placesearch.common.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpHeaders;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+@Service
 public class HttpUtil {
 
-    public static String getKakaoRequest(String targetUrl, String query, String authorization) {
+    public static String getKakaoRequest(String targetUrl, String keyword, String authorization) {
 
         String response = "";
 
         try {
-            if (query != null && query.length() > 0) {
-                targetUrl = targetUrl + "?" + query;
+            if (keyword == null || authorization == null) {
+                return null;
             }
+            String encodedKeyword = URLEncoder.encode(keyword, "UTF-8");
+            targetUrl = targetUrl + "?query=" + encodedKeyword;
+
             URL url = new URL(targetUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET"); // 전송 방식
-            conn.setRequestProperty("Content-Type", "application/json;");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
             if (authorization != null && authorization.length() > 0) {
                 conn.setRequestProperty("Authorization", authorization);
@@ -31,10 +44,11 @@ public class HttpUtil {
             conn.setReadTimeout(5000); // 읽기 타임아웃 설정(5초)
             conn.setDoOutput(true);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            InputStreamReader in = new InputStreamReader((InputStream) conn.getContent(), StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(in);
 
             String inputLine;
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             while ((inputLine = br.readLine()) != null) {
                 sb.append(inputLine);
             }
