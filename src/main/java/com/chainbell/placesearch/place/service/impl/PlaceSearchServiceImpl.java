@@ -7,6 +7,8 @@ import com.chainbell.placesearch.place.service.PlaceSearchService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PlaceSearchServiceImpl implements PlaceSearchService {
 
@@ -32,9 +34,10 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     String naverSecret;
 
     @Override
-    public String getPlaceList(String keyword) {
+    public List getPlaceList(String keyword) {
 
         // 1. keyword redis queue push
+
 
         // 2. open api 호출 - Domain Root 선언
         PlaceSearchVO placeSearch = PlaceSearchVO.builder()
@@ -42,7 +45,7 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
                 .placeList(new PlaceListVO())
                 .build();
 
-        // 2-1. kakao open api
+        // 2-1. kakao open api (default 45개)
         try{
             String kakaoSearchResult = HttpUtil.getRequest(kakaoHost+kakaoUrl, placeSearch.getKakaoGetQueryString(), kakaoKey, null);
             placeSearch.getPlaceList().setKakaoPlaceInfoVOList(kakaoSearchResult);
@@ -51,7 +54,7 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
             e.printStackTrace();
         }
 
-        // 2-2. naver open api
+        // 2-2. naver open api (default 1, max 5개)
         try{
             String naverSearchResult = HttpUtil.getRequest(naverHost+naverUrl, placeSearch.getNaverGetQueryString(), kakaoKey, placeSearch.getNaverHeaderInfoFormat(naverId, naverSecret));
             placeSearch.getPlaceList().setNaverPlaceInfoVOList(naverSearchResult);
@@ -61,9 +64,9 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
         }
 
         // 3. 2, 3번 데이터 정리
+        List result = placeSearch.getPlaceList().getPlaceInfoList();
 
-
-        return null;
+        return result;
     }
 
 

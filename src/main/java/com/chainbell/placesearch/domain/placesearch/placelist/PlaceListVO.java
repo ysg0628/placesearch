@@ -1,8 +1,9 @@
 package com.chainbell.placesearch.domain.placesearch.placelist;
 
-import com.chainbell.placesearch.domain.placesearch.placelist.kakao.KakaoPlaceInfoVO;
-import com.chainbell.placesearch.domain.placesearch.placelist.naver.NaverPlaceInfoVO;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.PlaceInfoVO;
+import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.PlaceServiceCodeVO;
+import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.kakao.KakaoPlaceInfoVO;
+import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.naver.NaverPlaceInfoVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +11,17 @@ import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
 public class PlaceListVO {
+
+    final int serviceCode = 1;
+
     List<KakaoPlaceInfoVO> kakaoPlaceInfoVOList = new ArrayList<KakaoPlaceInfoVO>();
 
     List<NaverPlaceInfoVO> naverPlaceInfoVOList = new ArrayList<NaverPlaceInfoVO>();
@@ -28,7 +32,7 @@ public class PlaceListVO {
 
             JSONObject kakaoResult = new JSONObject(kakaoPlaceJson);
             for (int i = 0; i < kakaoResult.getJSONArray("documents").length(); i++) {
-                if(i == 5){
+                if (i == 5) {
                     break;
                 }
                 kakaoPlaceInfoVOList.add(mapper.readValue(kakaoResult.getJSONArray("documents").get(i).toString(), KakaoPlaceInfoVO.class));
@@ -36,7 +40,6 @@ public class PlaceListVO {
         } catch (Exception e) {
             kakaoPlaceInfoVOList = new ArrayList<KakaoPlaceInfoVO>();
         }
-
     }
 
     public void setNaverPlaceInfoVOList(String naverPlaceJson) {
@@ -53,17 +56,60 @@ public class PlaceListVO {
         } catch (Exception e) {
             naverPlaceInfoVOList = new ArrayList<NaverPlaceInfoVO>();
         }
-
-
     }
 
-    public String getPlaceInfoList(){
-        // 중복 제거
-        // 정렬(중복 1순위, 카카오 2순위, 네이버 3순위, etc 4순위)
-        
+    public List<PlaceInfoVO> getPlaceInfoList() {
 
+        Map<String, PlaceInfoVO> placeInfo = new HashMap<String, PlaceInfoVO>();
 
-        return "";
+        // 1. kakao 입력
+        for (KakaoPlaceInfoVO kakaoPlaceInfoVO : kakaoPlaceInfoVOList) {
+            placeInfo.put(
+                    kakaoPlaceInfoVO.getPlaceName(),
+                    new PlaceInfoVO(
+                            kakaoPlaceInfoVO.getAddressName(),
+                            kakaoPlaceInfoVO.getRoadAddressName(),
+                            kakaoPlaceInfoVO.getPlaceName(),
+                            PlaceServiceCodeVO.kakao
+                    )
+            );
+        }
+
+        // 2. naver 입력
+        for (NaverPlaceInfoVO naverPlaceInfoVO : naverPlaceInfoVOList) {
+            if (placeInfo.containsKey(naverPlaceInfoVO.getTitle())) {
+                placeInfo.get(naverPlaceInfoVO.getTitle()).setServiceCode(PlaceServiceCodeVO.duplicated);
+            } else {
+                placeInfo.put(
+                        naverPlaceInfoVO.getTitle(),
+                        new PlaceInfoVO(
+                                naverPlaceInfoVO.getAddress(),
+                                naverPlaceInfoVO.getRoadAddress(),
+                                naverPlaceInfoVO.getTitle(),
+                                PlaceServiceCodeVO.naver
+                        )
+                );
+            }
+        }
+
+        // 3. 정렬
+        List<PlaceInfoVO> placeInfoList = new ArrayList<PlaceInfoVO>();
+        {
+            int count = 0;
+            for (String key : placeInfo.keySet()) {
+                if(count == 10)
+                    break;
+                placeInfoList.add(placeInfo.get(key));
+                count ++;
+            }
+        }
+        List<PlaceInfoVO> sortedPlaceInfo = placeInfoList.stream()
+                .sorted(
+                        Comparator.comparingLong(PlaceInfoVO::getServiceCode)
+                                .thenComparing(PlaceInfoVO::getName)
+                ).collect(Collectors.toList());
+
+        return sortedPlaceInfo;
     }
 
 }

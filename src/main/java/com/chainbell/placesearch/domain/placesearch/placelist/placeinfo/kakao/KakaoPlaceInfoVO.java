@@ -1,4 +1,4 @@
-package com.chainbell.placesearch.domain.placesearch.placelist.kakao;
+package com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

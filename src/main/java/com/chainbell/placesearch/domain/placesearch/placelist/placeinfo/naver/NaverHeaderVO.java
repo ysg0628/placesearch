@@ -1,4 +1,4 @@
-package com.chainbell.placesearch.domain.placesearch.placelist.naver;
+package com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.naver;
 
 import lombok.*;
 
