@@ -3,8 +3,12 @@ package com.chainbell.placesearch.place.service.impl;
 import com.chainbell.placesearch.common.util.HttpUtil;
 import com.chainbell.placesearch.domain.placesearch.PlaceSearchVO;
 import com.chainbell.placesearch.domain.placesearch.placelist.PlaceListVO;
+import com.chainbell.placesearch.helper.redis.PlaceSearchKey;
 import com.chainbell.placesearch.place.service.PlaceSearchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,11 +37,15 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     @Value("${naver.openapi.header.client.secret}")
     String naverSecret;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     @Override
     public List getPlaceList(String keyword) {
 
         // 1. keyword redis queue push
-
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+        listOperations.rightPush(PlaceSearchKey.getKeywordQueue, keyword);
 
         // 2. open api 호출 - Domain Root 선언
         PlaceSearchVO placeSearch = PlaceSearchVO.builder()

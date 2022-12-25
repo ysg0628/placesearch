@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class PlaceListVO {
 
-    final int serviceCode = 1;
-
     List<KakaoPlaceInfoVO> kakaoPlaceInfoVOList = new ArrayList<KakaoPlaceInfoVO>();
 
     List<NaverPlaceInfoVO> naverPlaceInfoVOList = new ArrayList<NaverPlaceInfoVO>();
@@ -58,6 +56,9 @@ public class PlaceListVO {
         }
     }
 
+    /**
+     * Open api 결과를 하나의 리스트로 정리
+     * */
     public List<PlaceInfoVO> getPlaceInfoList() {
 
         Map<String, PlaceInfoVO> placeInfo = new HashMap<String, PlaceInfoVO>();
