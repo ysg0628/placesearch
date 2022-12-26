@@ -1,9 +1,17 @@
 package com.chainbell.placesearch.helper.redis;
 
-import lombok.Getter;
-
 public class PlaceSearchKey {
 
-    public static final String getKeywordQueue = "place.search";
+    /**
+     * TYPE : list
+     * COMMAND : rpush, lpop
+     * */
+    public static final String keywordQueue = "place.search";
+
+    /**
+     * TYPE : sorted set
+     * COMMAND : ZINCRBY, ZRANGE
+     * */
+    public static final String keywordRank = "place.keyword.rank";
 
 }
