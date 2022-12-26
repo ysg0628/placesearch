@@ -46,14 +46,10 @@ public class PlaceSearchSchedule {
         Map<String, Integer> scoreCount = new HashMap<String, Integer>();
         for (Object keywordObj : keywordList) {
             String keywordTemp = keywordObj.toString();
-            System.out.println("   " + keywordTemp);
-            if(scoreCount.containsKey(keywordTemp)){
+            if(scoreCount.containsKey(keywordTemp))
                 scoreCount.put(keywordTemp, scoreCount.get(keywordTemp)+1);
-            }
-            else{
+            else
                 scoreCount.put(keywordTemp, 1);
-            }
-
         }
 
         // 3. 2번 조회값 + 1 -> redis keyword sorted set 저장
