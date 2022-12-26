@@ -1,5 +1,6 @@
 package com.chainbell.placesearch.api.place.controller;
 
+import com.chainbell.placesearch.api.place.dto.PlaceListDTO;
 import com.chainbell.placesearch.api.place.dto.PlaceRankDTO;
 import com.chainbell.placesearch.api.place.service.impl.PlaceSearchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,9 @@ public class PlaceController {
     PlaceSearchServiceImpl placeSearchService;
 
     @GetMapping("placeList")
-    public List getPlaceList(@RequestParam("placeKeyword") String placeKeyword){
+    public List<PlaceListDTO> getPlaceList(@RequestParam("placeKeyword") String placeKeyword){
 
-        List result = placeSearchService.getPlaceList(placeKeyword);
+        List<PlaceListDTO> result = placeSearchService.getPlaceList(placeKeyword);
 
         return result;
     }

@@ -1,9 +1,11 @@
 package com.chainbell.placesearch.api.place.service.impl;
 
+import com.chainbell.placesearch.api.place.dto.PlaceListDTO;
 import com.chainbell.placesearch.api.place.dto.PlaceRankDTO;
 import com.chainbell.placesearch.common.util.HttpUtil;
 import com.chainbell.placesearch.domain.placesearch.PlaceSearchVO;
 import com.chainbell.placesearch.domain.placesearch.placelist.PlaceListVO;
+import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.PlaceInfoVO;
 import com.chainbell.placesearch.helper.redis.PlaceSearchKey;
 import com.chainbell.placesearch.api.place.service.PlaceSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     private RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public List getPlaceList(String keyword) {
+    public List<PlaceListDTO> getPlaceList(String keyword) {
 
         System.out.println("getPlaceList " + keyword);
 
@@ -79,9 +81,17 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
         }
 
         // 3. 2, 3번 데이터 정리
-        List result = placeSearch.getPlaceList().getPlaceInfoList();
+        List<PlaceListDTO> placeList = new ArrayList<PlaceListDTO>();
+        List<PlaceInfoVO> placeInfoList = placeSearch.getPlaceList().getPlaceInfoList();
+        for (PlaceInfoVO placeInfoVO : placeInfoList) {
+            placeList.add(PlaceListDTO.builder()
+                    .name(placeInfoVO.getName())
+                    .roadAddress(placeInfoVO.getRoadAddress())
+                    .address(placeInfoVO.getAddress())
+                    .build());
+        }
 
-        return result;
+        return placeList;
     }
 
     @Override
@@ -139,7 +149,7 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
         }
 
         // 3. 2번 조회값 + 1 -> redis keyword sorted set 저장
-        try{
+        try {
             redisTemplate.executePipelined(
                     (RedisCallback<Object>) connection -> {
                         for (String key : scoreCount.keySet()) {
@@ -147,8 +157,7 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
                         }
                         return null;
                     });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
