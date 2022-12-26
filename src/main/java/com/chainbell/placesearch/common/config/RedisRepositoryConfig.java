@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 @Configuration
 @EnableRedisRepositories
-public class RedisRepositoryConfig{
+public class RedisRepositoryConfig {
 
     @Value("${spring.redis.embedded.host}")
     private String embeddedRedisHost;
@@ -24,11 +24,13 @@ public class RedisRepositoryConfig{
     @Value("${spring.redis.data.port}")
     private int redisPort;
 
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory() {
-//        return new LettuceConnectionFactory(embeddedRedisHost, embeddedRedisPort);
-//    }
-
+    /*
+    // embedded redis 설정
+        @Bean
+        public RedisConnectionFactory redisConnectionFactory() {
+            return new LettuceConnectionFactory(embeddedRedisHost, embeddedRedisPort);
+        }
+    */
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);

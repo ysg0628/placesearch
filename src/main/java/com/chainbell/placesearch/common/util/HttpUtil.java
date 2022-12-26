@@ -41,17 +41,19 @@ public class HttpUtil {
             conn.setReadTimeout(5000); // 읽기 타임아웃 설정(5초)
             conn.setDoOutput(true);
 
-            InputStreamReader in = new InputStreamReader((InputStream) conn.getContent(), StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(in);
+            if(conn.getResponseCode()==200){
+                InputStreamReader in = new InputStreamReader((InputStream) conn.getContent(), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(in);
 
-            String inputLine;
-            StringBuilder sb = new StringBuilder();
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
+                String inputLine;
+                StringBuilder sb = new StringBuilder();
+                while ((inputLine = br.readLine()) != null) {
+                    sb.append(inputLine);
+                }
+                br.close();
+
+                response = sb.toString();
             }
-            br.close();
-
-            response = sb.toString();
 
         } catch (Exception e) {
             e.printStackTrace();

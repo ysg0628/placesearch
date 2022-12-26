@@ -52,8 +52,6 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     @Override
     public List<PlaceListDTO> getPlaceList(String keyword) {
 
-        System.out.println("getPlaceList " + keyword);
-
         // 1. keyword redis queue push
         ListOperations<String, String> listOperations = redisTemplate.opsForList();
         listOperations.rightPush(PlaceSearchKey.keywordQueue, keyword);
