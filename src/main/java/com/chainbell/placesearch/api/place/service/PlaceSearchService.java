@@ -1,4 +1,4 @@
-package com.chainbell.placesearch.place.service;
+package com.chainbell.placesearch.api.place.service;
 
 import java.util.List;
 

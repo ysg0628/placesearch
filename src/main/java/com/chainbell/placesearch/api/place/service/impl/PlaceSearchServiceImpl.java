@@ -1,10 +1,10 @@
-package com.chainbell.placesearch.place.service.impl;
+package com.chainbell.placesearch.api.place.service.impl;
 
 import com.chainbell.placesearch.common.util.HttpUtil;
 import com.chainbell.placesearch.domain.placesearch.PlaceSearchVO;
 import com.chainbell.placesearch.domain.placesearch.placelist.PlaceListVO;
 import com.chainbell.placesearch.helper.redis.PlaceSearchKey;
-import com.chainbell.placesearch.place.service.PlaceSearchService;
+import com.chainbell.placesearch.api.place.service.PlaceSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ListOperations;
@@ -42,6 +42,8 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
 
     @Override
     public List getPlaceList(String keyword) {
+
+        System.out.println("getPlaceList " + keyword);
 
         // 1. keyword redis queue push
         ListOperations<String, String> listOperations = redisTemplate.opsForList();
