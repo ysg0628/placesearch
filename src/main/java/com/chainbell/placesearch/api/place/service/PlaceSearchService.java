@@ -12,6 +12,7 @@ public interface PlaceSearchService {
     /* 검색 횟수 기준 상위 키워드 조회 */
     List<PlaceRankDTO> getPopularPlaceKeywordList();
 
+    /* 키워드 랭킹 정보 저장 */
     void setPlaceSearchKeywordRank();
 
 }
