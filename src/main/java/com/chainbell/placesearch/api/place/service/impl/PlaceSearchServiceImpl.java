@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.zset.Tuple;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     @Value("${naver.openapi.header.client.secret}")
     String naverSecret;
 
+    @Value("${search.keyword.count.pop}")
+    private long countPop;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -59,20 +63,18 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
                 .build();
 
         // 2-1. kakao open api (default 45개)
-        try{
-            String kakaoSearchResult = HttpUtil.getRequest(kakaoHost+kakaoUrl, placeSearch.getKakaoGetQueryString(), kakaoKey, null);
+        try {
+            String kakaoSearchResult = HttpUtil.getRequest(kakaoHost + kakaoUrl, placeSearch.getKakaoGetQueryString(), kakaoKey, null);
             placeSearch.getPlaceList().setKakaoPlaceInfoVOList(kakaoSearchResult);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         // 2-2. naver open api (default 1, max 5개)
-        try{
-            String naverSearchResult = HttpUtil.getRequest(naverHost+naverUrl, placeSearch.getNaverGetQueryString(), kakaoKey, placeSearch.getNaverHeaderInfoFormat(naverId, naverSecret));
+        try {
+            String naverSearchResult = HttpUtil.getRequest(naverHost + naverUrl, placeSearch.getNaverGetQueryString(), kakaoKey, placeSearch.getNaverHeaderInfoFormat(naverId, naverSecret));
             placeSearch.getPlaceList().setNaverPlaceInfoVOList(naverSearchResult);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -85,10 +87,10 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     @Override
     public List<PlaceRankDTO> getPopularPlaceKeywordList() {
         List<PlaceRankDTO> keywordInfoList = new ArrayList<PlaceRankDTO>();
-        try{
+        try {
             Set<ZSetOperations.TypedTuple<String>> keywordInfoSet = redisTemplate.opsForZSet().reverseRangeWithScores(PlaceSearchKey.keywordRank, 0, 9);
-            if(keywordInfoSet != null && keywordInfoSet.size() > 0){
-                for(ZSetOperations.TypedTuple<String> keywordInfo : keywordInfoSet){
+            if (keywordInfoSet != null && keywordInfoSet.size() > 0) {
+                for (ZSetOperations.TypedTuple<String> keywordInfo : keywordInfoSet) {
                     PlaceRankDTO paramTemp = PlaceRankDTO.builder()
                             .keyword(keywordInfo.getValue())
                             .scoreRank(keywordInfo.getScore().intValue())
@@ -96,13 +98,60 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
                     keywordInfoList.add(paramTemp);
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             keywordInfoList = new ArrayList<PlaceRankDTO>();
         }
 
         return keywordInfoList;
+    }
+
+    @Override
+    public void setPlaceSearchKeywordRank() {
+
+        // 1. redis queue keyword lpop
+        List<Object> keywordList = new ArrayList<Object>();
+        try {
+            // 1-1. get list of values from redis by pipelining
+            keywordList = redisTemplate.executePipelined(
+                    (RedisCallback<Object>) connection -> {
+                        for (int i = 0; i < countPop; i++) {
+                            connection.listCommands().lPop(PlaceSearchKey.keywordQueue.getBytes());
+                        }
+                        return null;
+                    });
+
+            // 1-2. remove null value from pipelined result
+            while (keywordList.remove(null)) ;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 2. redis keyword 중복 카운트 계산
+        Map<String, Integer> scoreCount = new HashMap<String, Integer>();
+        for (Object keywordObj : keywordList) {
+            String keywordTemp = keywordObj.toString();
+            if (scoreCount.containsKey(keywordTemp))
+                scoreCount.put(keywordTemp, scoreCount.get(keywordTemp) + 1);
+            else
+                scoreCount.put(keywordTemp, 1);
+        }
+
+        // 3. 2번 조회값 + 1 -> redis keyword sorted set 저장
+        try{
+            redisTemplate.executePipelined(
+                    (RedisCallback<Object>) connection -> {
+                        for (String key : scoreCount.keySet()) {
+                            connection.zSetCommands().zIncrBy(PlaceSearchKey.keywordRank.getBytes(), Double.parseDouble(scoreCount.get(key).toString()), key.getBytes());
+                        }
+                        return null;
+                    });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 
