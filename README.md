@@ -21,6 +21,7 @@
     * redis cluster 사용 시 master-slave간 failover 정책 사용 가능
   * in-memory 저장으로 상대적으로 빠른 속도 보장 가능 
   * redis queue, pub-sub 구조 등 응용하기 좋은 인터페이스 존재  
+  * 사용 경험이 있어 러닝 커브가 적음 
 
 ### 기술 요구사항
 #### 1. 동시성 이슈 처리 - 키워드 별로 검색된 횟수 증가 처리
