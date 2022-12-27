@@ -8,6 +8,7 @@ import com.chainbell.placesearch.domain.placesearch.placelist.PlaceListVO;
 import com.chainbell.placesearch.domain.placesearch.placelist.placeinfo.PlaceInfoVO;
 import com.chainbell.placesearch.helper.redis.PlaceSearchKey;
 import com.chainbell.placesearch.api.place.service.PlaceSearchService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.zset.Tuple;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class PlaceSearchServiceImpl implements PlaceSearchService {
 
@@ -53,8 +55,15 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
     public List<PlaceListDTO> getPlaceList(String keyword) {
 
         // 1. keyword redis queue push
-        ListOperations<String, String> listOperations = redisTemplate.opsForList();
-        listOperations.rightPush(PlaceSearchKey.keywordQueue, keyword);
+        try{
+            ListOperations<String, String> listOperations = redisTemplate.opsForList();
+            listOperations.rightPush(PlaceSearchKey.keywordQueue, keyword);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            // rpush 실패 시, keyword 파일 로그로 저장
+            log.error(keyword);
+        }
 
         // 2. open api 호출 - Domain Root 선언
         PlaceSearchVO placeSearch = PlaceSearchVO.builder()
@@ -137,6 +146,10 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
         }
 
         // 2. redis keyword 중복 카운트 계산
+        if(keywordList.size() == 0){
+            return;
+        }
+
         Map<String, Integer> scoreCount = new HashMap<String, Integer>();
         for (Object keywordObj : keywordList) {
             String keywordTemp = keywordObj.toString();
@@ -157,6 +170,8 @@ public class PlaceSearchServiceImpl implements PlaceSearchService {
                     });
         } catch (Exception e) {
             e.printStackTrace();
+            // sorted set 저장 실패 시, keyword:count 파일 로그로 저장
+            log.error(scoreCount.toString());
         }
 
     }

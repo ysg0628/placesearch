@@ -34,6 +34,8 @@
     신규 장소 검색 관련 도메인 및 데이터 관리용 기능 추가
     * Domain placesearch.placelist.placeinfo 하위 도메인 추가 후 작업 
 #### 4. 서비스 오류 및 장애 처리 방법에 대한 고려
+    오류 및 장애 발생 시 이력 손실 위험이 있는 검색어 대상 파일 로그 저장
+      error 로그 수집 후 재처리 진행 가능  
 #### 5. 반응성(Low Latency)
     장소 정보 api 호출 시, 키워드 처리 비용을 redis queue로 넘겨서 api 호출 시점에서 처리 비용을 발생시키지 않음
 #### 6. 확장성(Scalability)
