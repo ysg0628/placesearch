@@ -36,3 +36,27 @@ Accept: application/json
 ###
 GET localhost:8080/v1/place/placeList?placeKeyword=코엑스
 Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=카카오뱅크
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=청담 할리스
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=고든램지 버거
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=롯데월드
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=37.5 brunch
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=키친마이야르
+Accept: application/json
