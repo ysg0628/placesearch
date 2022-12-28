@@ -1,2 +1,38 @@
 GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
 Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=판교 식당
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=판교 식당
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=판교식당
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=대학병원
+Accept: application/json
+
+###
+GET localhost:8080/v1/place/placeList?placeKeyword=코엑스
+Accept: application/json
