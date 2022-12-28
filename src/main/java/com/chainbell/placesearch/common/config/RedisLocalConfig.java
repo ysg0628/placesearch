@@ -11,10 +11,12 @@ import redis.embedded.RedisServer;
 import java.io.IOException;
 import java.util.Optional;
 
+/*
+// embedded redis 실행 설정
 @Configuration
 public class RedisLocalConfig implements InitializingBean, DisposableBean {
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.redis.embedded.port}")
     private int redisPort;
 
     private RedisServer redisServer;
@@ -36,3 +38,4 @@ public class RedisLocalConfig implements InitializingBean, DisposableBean {
     }
 
 }
+*/

@@ -1,0 +1,2 @@
+GET localhost:8080/v1/place/placeList?placeKeyword=노원구 은행
+Accept: application/json

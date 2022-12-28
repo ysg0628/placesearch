@@ -1,13 +1,72 @@
 package com.chainbell.placesearch;
 
+import com.chainbell.placesearch.common.util.HttpUtil;
+import com.chainbell.placesearch.domain.placesearch.PlaceSearchVO;
+import com.chainbell.placesearch.domain.placesearch.placelist.PlaceListVO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+
+import java.io.IOException;
 
 @SpringBootTest
 class PlacesearchApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Value("${kakao.openapi.host}")
+    String kakaoHost;
+
+    @Value("${kakao.openapi.url}")
+    String kakaoUrl;
+
+    @Value("${kakao.openapi.restapi.key}")
+    String kakaoKey;
+
+    @Value("${naver.openapi.host}")
+    String naverHost;
+
+    @Value("${naver.openapi.url}")
+    String naverUrl;
+
+    @Value("${naver.openapi.header.client.id}")
+    String naverId;
+
+    @Value("${naver.openapi.header.client.secret}")
+    String naverSecret;
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Test
+    void contextLoads() throws JSONException, IOException {
+
+        /*
+        String keyword = "강동구 고덕동 은행";
+
+        PlaceSearchVO placeSearch = PlaceSearchVO.builder()
+                .searchKeyword(keyword)
+                .placeList(new PlaceListVO())
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String result = HttpUtil.getRequest(kakaoHost + kakaoUrl, placeSearch.getKakaoGetQueryString(), kakaoKey, null);
+        placeSearch.getPlaceList().setKakaoPlaceInfoVOList(result);
+
+        String result2 = HttpUtil.getRequest(naverHost + naverUrl, placeSearch.getNaverGetQueryString(), kakaoKey, placeSearch.getNaverHeaderInfoFormat(naverId, naverSecret));
+        placeSearch.getPlaceList().setNaverPlaceInfoVOList(result2);
+
+        System.out.println(placeSearch.getPlaceList().getKakaoPlaceInfoVOList());
+        System.out.println(placeSearch.getPlaceList().getNaverPlaceInfoVOList());
+        */
+
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+        listOperations.rightPush("key", "value");
+
+    }
 
 }
