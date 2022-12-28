@@ -49,4 +49,10 @@
 #### 8. 지속적 유지 보수 및 확장에 용이한 아키텍처에 대한 설계
     Domain 단위 개발 진행 - Root 도메인을 기준으로 한 도메인 간 상하 구조로 관리 
       각 비지니스 로직은 관련 도메인 객체에 귀속
-      각 프로젝트 고유의 서비스 로직과 infra-resource(DB, cache 등) 로직은 서비스 객체에 귀속 
+      각 프로젝트 고유의 서비스 로직과 infra-resource(DB, cache 등) 로직은 서비스 객체에 귀속
+
+### 테스트 방법
+test/http 경로 하위 
+  1. GET_placeList.http all request 실행
+  2. GET_placeKeywordRank.http 실행
+하여 결과를 확인 가능
