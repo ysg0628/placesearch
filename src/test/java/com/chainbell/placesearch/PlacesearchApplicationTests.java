@@ -44,28 +44,6 @@ class PlacesearchApplicationTests {
     @Test
     void contextLoads() throws JSONException, IOException {
 
-        /*
-        String keyword = "강동구 고덕동 은행";
-
-        PlaceSearchVO placeSearch = PlaceSearchVO.builder()
-                .searchKeyword(keyword)
-                .placeList(new PlaceListVO())
-                .build();
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        String result = HttpUtil.getRequest(kakaoHost + kakaoUrl, placeSearch.getKakaoGetQueryString(), kakaoKey, null);
-        placeSearch.getPlaceList().setKakaoPlaceInfoVOList(result);
-
-        String result2 = HttpUtil.getRequest(naverHost + naverUrl, placeSearch.getNaverGetQueryString(), kakaoKey, placeSearch.getNaverHeaderInfoFormat(naverId, naverSecret));
-        placeSearch.getPlaceList().setNaverPlaceInfoVOList(result2);
-
-        System.out.println(placeSearch.getPlaceList().getKakaoPlaceInfoVOList());
-        System.out.println(placeSearch.getPlaceList().getNaverPlaceInfoVOList());
-        */
-
-        ListOperations<String, String> listOperations = redisTemplate.opsForList();
-        listOperations.rightPush("key", "value");
 
     }
 
